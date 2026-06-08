@@ -8,14 +8,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET 9.0.203
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.203'
 
-      - name: Pin iOS workload to Xcode 16 compatible version
+      - name: Install MAUI iOS Workload
         run: |
-          dotnet workload install maui-ios --version 9.0.21
+          dotnet workload install maui-ios --version 9.0.203
+          dotnet workload list
 
       - name: Restore Dependencies
         run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj -p:TargetFramework=net9.0-ios
@@ -32,8 +33,7 @@ jobs:
             -p:EnableCodeSigning=false \
             -p:BuildIpa=true \
             -p:MtouchLink=SdkOnly \
-            -p:WarningLevel=0 \
-            -p:NoWarn=MT0180
+            -p:WarningLevel=0
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
