@@ -9,7 +9,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # This downloads the required iOS Simulator runtime so actool doesn't crash
       - name: Install iOS Simulator Runtime
         run: |
           sudo xcodebuild -downloadPlatform iOS
@@ -26,7 +25,7 @@ jobs:
 
       - name: Build and Publish Unsigned
         run: |
-          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-"
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-" /p:PublishTrimmed=false /p:MtouchLink=SdkOnly
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
