@@ -1,0 +1,28 @@
+name: Build iOS IPA
+on:
+  workflow_dispatch: # Allows you to manually trigger the build
+
+jobs:
+  build:
+    runs-on: macos-14 # Uses GitHub's cloud-hosted Mac
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x' # Matches OpenUtau Mobile's target framework
+
+      - name: Install iOS Workload
+        run: dotnet workload install ios
+
+      - name: Build and Publish
+        run: |
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-IPA
+          path: OpenUtauMobile/bin/Release/net9.0-ios/ios-arm64/publish/
