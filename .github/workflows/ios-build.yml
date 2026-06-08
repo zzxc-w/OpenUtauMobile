@@ -1,7 +1,6 @@
 name: Build iOS IPA
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: macos-15
@@ -14,20 +13,30 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Install and Restore MAUI Workloads
+      - name: Pin iOS workload to Xcode 16 compatible version
         run: |
-          dotnet workload install maui
-          dotnet workload restore OpenUtauMobile/OpenUtauMobile.csproj
+          dotnet workload install maui-ios --version 9.0.21
 
-      - name: Build and Publish Unsigned
-        env:
-          # Injects the error blocks safely through the backend environment 
-          NoWarn: 'MT0180;MT2301;NETSDK1144'
+      - name: Restore Dependencies
+        run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj -p:TargetFramework=net9.0-ios
+
+      - name: Build Unsigned IPA
         run: |
-          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-" /p:MtouchLink=None /p:ContinueOnError=true
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj \
+            -c Release \
+            -f net9.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:ArchiveOnBuild=true \
+            -p:CodesignKey="" \
+            -p:CodesignProvision="" \
+            -p:EnableCodeSigning=false \
+            -p:BuildIpa=true \
+            -p:MtouchLink=SdkOnly \
+            -p:WarningLevel=0 \
+            -p:NoWarn=MT0180
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-IPA
-          path: OpenUtauMobile/bin/Release/net9.0-ios/ios-arm64/publish/
+          path: OpenUtauMobile/bin/Release/net9.0-ios/ios-arm64/publish/*.ipa
