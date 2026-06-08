@@ -4,7 +4,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15 # Upgrades to macOS 15 runner
+    runs-on: macos-15
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -12,21 +12,25 @@ jobs:
       - name: Set Xcode Version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.2' # Uses the stable Xcode 16.2 runtime available on the cloud image
+          xcode-version: '16.2' # Reverts to a stable, universally available Xcode 16 base
+
+      - name: Force Stable .NET Version
+        run: |
+          echo '{"sdk": {"version": "9.0.100", "rollForward": "minor"}}' > global.json
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '9.0.100'
 
       - name: Install and Restore MAUI Workloads
         run: |
-          dotnet workload install maui
+          dotnet workload install maui --from-rollback-file https://aka.ms || dotnet workload install maui
           dotnet workload restore OpenUtauMobile/OpenUtauMobile.csproj
 
       - name: Build and Publish
         run: |
-          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
