@@ -19,13 +19,17 @@ jobs:
           dotnet workload list
 
       - name: Restore Dependencies
-        run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj -p:TargetFramework=net9.0-ios
+        run: |
+          dotnet restore OpenUtauMobile/OpenUtauMobile.csproj \
+            -p:TargetFrameworks=net9.0-ios \
+            -p:TargetFramework=net9.0-ios
 
       - name: Build Unsigned IPA
         run: |
           dotnet publish OpenUtauMobile/OpenUtauMobile.csproj \
             -c Release \
             -f net9.0-ios \
+            -p:TargetFrameworks=net9.0-ios \
             -p:RuntimeIdentifier=ios-arm64 \
             -p:ArchiveOnBuild=true \
             -p:CodesignKey="" \
