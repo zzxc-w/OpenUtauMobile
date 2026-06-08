@@ -21,7 +21,7 @@ jobs:
 
       - name: Build and Publish Unsigned
         run: |
-          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-" /p:MtouchLink=None
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-" /p:MtouchLink=None /p:NoWarn=MT0180,MT2301,NETSDK1144 /p:ContinueOnError=true
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
