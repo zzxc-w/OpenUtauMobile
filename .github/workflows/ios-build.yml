@@ -1,10 +1,10 @@
 name: Build iOS IPA
 on:
-  workflow_dispatch: # Allows you to manually trigger the build
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-14 # Uses GitHub's cloud-hosted Mac
+    runs-on: macos-14
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -12,10 +12,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x' # Matches OpenUtau Mobile's target framework
+          dotnet-version: '9.0.x'
 
-      - name: Install iOS Workload
-        run: dotnet workload install ios
+      - name: Install Mobile Workloads
+        run: |
+          dotnet workload install ios
+          dotnet workload install android
 
       - name: Build and Publish
         run: |
