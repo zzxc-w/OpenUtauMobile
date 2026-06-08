@@ -14,10 +14,10 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Install Mobile Workloads
+      - name: Install and Restore MAUI Workloads
         run: |
-          dotnet workload install ios
-          dotnet workload install android
+          dotnet workload install maui
+          dotnet workload restore OpenUtauMobile/OpenUtauMobile.csproj
 
       - name: Build and Publish
         run: |
