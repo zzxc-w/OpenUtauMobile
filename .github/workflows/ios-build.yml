@@ -28,10 +28,16 @@ jobs:
           dotnet workload install maui --from-rollback-file https://aka.ms || dotnet workload install maui
           dotnet workload restore OpenUtauMobile/OpenUtauMobile.csproj
 
+      - name: Purge Asset Catalogs (Bypass Actool Error)
+        run: |
+          # This deletes the assets folder completely so actool is not triggered
+          rm -rf OpenUtauMobile/Platforms/iOS/Assets.xcassets
+          rm -rf OpenUtauMobile/Assets.xcassets
+          
       - name: Build and Publish Unsigned
         run: |
-          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-" /p:CompileAppManifest=false /p:EnableAppIconAssets=false /p:OptimizePNGs=false /p:BuildIpa=true
-          
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj -c Release -f net9.0-ios /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64 /p:WarningLevel=0 /p:ValidateXcodeVersion=false /p:CodesignKey="-" /p:CodesignProvision="-"
+
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
